@@ -31,7 +31,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-     <textarea
+     <textarea rows={7} cols={70}
       value={input}
       onChange={(e) => setInput(e.target.value)}>
      </textarea>
