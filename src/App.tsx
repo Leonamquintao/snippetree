@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as esbuild from 'esbuild-wasm';
+import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
 
 const App: React.FC = () => {
 
@@ -21,12 +22,18 @@ const App: React.FC = () => {
 
   const transpile = async () => {
     if(!esbuildRef.current) return;
-    const result = await esbuildRef.current.transform(input, {
-      loader: 'jsx',
-      target: 'es2015',
-    });
+    // const result = await esbuildRef.current.transform(input, {
+    //   loader: 'jsx',
+    //   target: 'es2015',
+    // });
 
-    setCode(result.code);
+    const result = await esbuildRef.current.build({
+      entryPoints: ['index.js'],
+      bundle: true,
+      write: false,
+      plugins: [unpkgPathPlugin()],
+    });
+    setCode(result.outputFiles[0].text);
   };
 
   return (
