@@ -29,12 +29,20 @@ export const unpkgPathPlugin = () => {
  
       build.onLoad({ filter: /.*/ }, async (args: any) => {
         if (args.path === 'index.js') {
-          const { data, request } = await axios.get(args.path);
           return {
             loader: 'jsx',
-            contents: data,
-            resolveDir: new URL('./', request.responseURL).pathname,
-          }
+            contents: `
+              import react from 'react';
+              console.log(message);
+            `,
+          };
+        }
+
+        const { data, request } = await axios.get(args.path);
+        return {
+          loader: 'jsx',
+          contents: data,
+          resolveDir: new URL('./', request.responseURL).pathname,
         }
       });
     },

@@ -22,16 +22,16 @@ const App: React.FC = () => {
 
   const transpile = async () => {
     if(!esbuildRef.current) return;
-    // const result = await esbuildRef.current.transform(input, {
-    //   loader: 'jsx',
-    //   target: 'es2015',
-    // });
 
     const result = await esbuildRef.current.build({
       entryPoints: ['index.js'],
       bundle: true,
       write: false,
       plugins: [unpkgPathPlugin()],
+      define: {
+        'process.env.NODE_ENV': '"production"',
+        global: 'window',
+      },
     });
     setCode(result.outputFiles[0].text);
   };
