@@ -6,6 +6,7 @@ import { fetchPlugin } from './plugins/fetch-plugin';
 const App: React.FC = () => {
 
   const esbuildRef = useRef<any>();
+  const iframeRef = useRef<any>();
 
   const startService = async () => {
     esbuildRef.current = await esbuild.startService({
@@ -38,13 +39,23 @@ const App: React.FC = () => {
       },
     });
   
-    setCode(result.outputFiles[0].text);
+    // setCode(result.outputFiles[0].text);
+    iframeRef.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
   };
 
   const html = `
-    <script>
-      ${code}
-    </script>
+   <html>
+    <head></head>
+    <body>
+      <div id='root'>
+      </div>
+      <script>
+        window.addEventListener('message', (event) => {
+          eval(event.data);
+        }, false);
+      </script>
+    </body>
+   </htm>
   `;
 
   return (
@@ -58,7 +69,7 @@ const App: React.FC = () => {
      </div>
      <pre>{code}</pre>
 
-     <iframe sandbox='allow-scripts' srcDoc={html} />
+     <iframe ref={iframeRef} sandbox='allow-scripts' srcDoc={html} />
     </div>
   );
 }
