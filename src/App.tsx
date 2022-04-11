@@ -39,13 +39,13 @@ const App: React.FC = () => {
     });
   
     setCode(result.outputFiles[0].text);
-  
-    try {
-      eval(result.outputFiles[0].text);
-    } catch (err) {
-      alert(err);
-    }
   };
+
+  const html = `
+    <script>
+      ${code}
+    </script>
+  `;
 
   return (
     <div>
@@ -58,7 +58,7 @@ const App: React.FC = () => {
      </div>
      <pre>{code}</pre>
 
-     <iframe src='/test.html' />
+     <iframe sandbox='allow-scripts' srcDoc={html} />
     </div>
   );
 }
