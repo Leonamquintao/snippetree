@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import * as esbuild from 'esbuild-wasm';
 import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
 import { fetchPlugin } from './plugins/fetch-plugin';
+import CodeEditor from './components/code-editor';
 
 const App: React.FC = () => {
 
@@ -55,7 +56,7 @@ const App: React.FC = () => {
           } catch (err) {
             const root = document.querySelector('#root');
             root.innerHTML = '<div style="color: red;"><h4>Runtime Error!</h4>' + err + '</div>';
-            trow err;
+            throw err;
           }
         }, false);
       </script>
@@ -65,10 +66,14 @@ const App: React.FC = () => {
 
   return (
     <div>
-     <textarea rows={7} cols={70}
-      value={input}
-      onChange={(e) => setInput(e.target.value)}>
-     </textarea>
+      <CodeEditor 
+        initialValue={"const a = 2;"}
+        onChange={(value) => setInput(value)}
+        />
+      <textarea rows={7} cols={70}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}>
+      </textarea>
      <div>
        <button onClick={transpile}>Submit</button>
      </div>
