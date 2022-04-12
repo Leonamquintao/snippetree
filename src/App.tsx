@@ -20,10 +20,11 @@ const App: React.FC = () => {
   },[]);
   
   const [input, setInput] = useState('');
-  const [code, setCode] = useState('');
 
   const transpile = async () => {
     if(!esbuildRef.current) return;
+
+    iframeRef.current.srcdoc = html;
 
     const result = await esbuildRef.current.build({
       entryPoints: ['index.js'],
@@ -38,8 +39,7 @@ const App: React.FC = () => {
         global: 'window',
       },
     });
-  
-    // setCode(result.outputFiles[0].text);
+
     iframeRef.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
   };
 
@@ -47,11 +47,16 @@ const App: React.FC = () => {
    <html>
     <head></head>
     <body>
-      <div id='root'>
-      </div>
+      <div id='root'></div>
       <script>
         window.addEventListener('message', (event) => {
-          eval(event.data);
+          try {
+            eval(event.data);
+          } catch (err) {
+            const root = document.querySelector('#root');
+            root.innerHTML = '<div style="color: red;"><h4>Runtime Error!</h4>' + err + '</div>';
+            trow err;
+          }
         }, false);
       </script>
     </body>
@@ -67,9 +72,7 @@ const App: React.FC = () => {
      <div>
        <button onClick={transpile}>Submit</button>
      </div>
-     <pre>{code}</pre>
-
-     <iframe ref={iframeRef} sandbox='allow-scripts' srcDoc={html} />
+     <iframe title='preview' ref={iframeRef} sandbox='allow-scripts' srcDoc={html} />
     </div>
   );
 }
