@@ -70,7 +70,7 @@ const App: React.FC = () => {
         initialValue={"const a = 2;"}
         onChange={(value) => setInput(value)}
         />
-      <textarea rows={7} cols={70}
+      <textarea rows={3} cols={70}
         value={input}
         onChange={(e) => setInput(e.target.value)}>
       </textarea>
