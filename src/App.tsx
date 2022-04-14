@@ -3,11 +3,12 @@ import * as esbuild from 'esbuild-wasm';
 import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
 import { fetchPlugin } from './plugins/fetch-plugin';
 import CodeEditor from './components/code-editor';
+import Preview from './components/preview';
 
 const App: React.FC = () => {
 
   const esbuildRef = useRef<any>();
-  const iframeRef = useRef<any>();
+  
 
   const startService = async () => {
     esbuildRef.current = await esbuild.startService({
@@ -21,11 +22,10 @@ const App: React.FC = () => {
   },[]);
   
   const [input, setInput] = useState('');
+  const [code, setCode] = useState('');
 
   const transpile = async () => {
     if(!esbuildRef.current) return;
-
-    iframeRef.current.srcdoc = html;
 
     const result = await esbuildRef.current.build({
       entryPoints: ['index.js'],
@@ -41,43 +41,21 @@ const App: React.FC = () => {
       },
     });
 
-    iframeRef.current.contentWindow.postMessage(result.outputFiles[0].text, '*');
+    setCode(result.outputFiles[0].text);
   };
 
-  const html = `
-   <html>
-    <head></head>
-    <body>
-      <div id='root'></div>
-      <script>
-        window.addEventListener('message', (event) => {
-          try {
-            eval(event.data);
-          } catch (err) {
-            const root = document.querySelector('#root');
-            root.innerHTML = '<div style="color: red;"><h4>Runtime Error!</h4>' + err + '</div>';
-            throw err;
-          }
-        }, false);
-      </script>
-    </body>
-   </htm>
-  `;
+  
 
   return (
     <div>
       <CodeEditor 
-        initialValue={"const a = 2;"}
+        initialValue={code}
         onChange={(value) => setInput(value)}
-        />
-      <textarea rows={3} cols={70}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}>
-      </textarea>
+      />
      <div>
        <button onClick={transpile}>Submit</button>
      </div>
-     <iframe title='preview' ref={iframeRef} sandbox='allow-scripts' srcDoc={html} />
+     <Preview code={code} />
     </div>
   );
 }
