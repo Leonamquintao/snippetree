@@ -17,13 +17,14 @@ const CodeCell: React.FC = () => {
     return () => clearTimeout(timer);
   },[input]);
 
+  const initial = 'const root = document.querySelector("#root");';
 
   return (
     <Resizable direction='vertical'>
       <div style={{ height: '100%', display: 'flex', flexDirection: 'row' }}>
         <Resizable direction='horizontal'>
           <CodeEditor 
-            initialValue={'const a = 1;'}
+            initialValue={initial}
             onChange={(value) => setInput(value)}
           />
         </Resizable>
